@@ -50,7 +50,7 @@ public class BoardManager : MonoBehaviour
 
         for (int x = -1; x < columns + 1; x++)
         {
-            for (int y = -1; y < rows; y++)
+            for (int y = -1; y < rows + 1; y++)
             {
                 GameObject to_instantiate = floor_tiles[UnityEngine.Random.Range(0, floor_tiles.Length)];
                 if (x == -1 || x == columns || y == -1 || y == rows)
@@ -68,15 +68,29 @@ public class BoardManager : MonoBehaviour
         int random_index = UnityEngine.Random.Range(0, grid_position.Count);
         Vector2 random_position = grid_position[random_index];
         grid_position.RemoveAt(random_index);
+        return random_position;
     }
 
-    void Start()
+    void LayoutObjectAtRandom(GameObject[] tile_array, int minimum, int maximum)
     {
+        int object_count = UnityEngine.Random.Range(minimum, maximum + 1);
 
+        for(int i = 0; i < object_count; i++)
+        {
+            Vector2 random_position = RandomPosition();
+            GameObject tile_choice = tile_array[UnityEngine.Random.Range(0, tile_array.Length)];
+            Instantiate(tile_choice, random_position, Quaternion.identity);
+        }
     }
 
-    void Update()
+    public void SetupSence(int level)
     {
-
+        BoardSetUp();
+        InitializeList();
+        LayoutObjectAtRandom(wall_tiles, wall_count.minimum, wall_count.maximum);
+        LayoutObjectAtRandom(food_tiles, food_count.minimum, food_count.maximum);
+        int enemy_count = (int)Mathf.Log(level, 2f);
+        LayoutObjectAtRandom(enemy_tiles, enemy_count, enemy_count);
+        Instantiate(exit, new Vector2(columns - 1, rows - 1), Quaternion.identity);
     }
 }
